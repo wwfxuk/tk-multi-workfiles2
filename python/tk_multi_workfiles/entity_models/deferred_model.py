@@ -8,6 +8,8 @@
 # agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
+from functools import partial
+
 import sgtk
 from sgtk.platform.qt import QtGui, QtCore
 
@@ -389,10 +391,10 @@ class ShotgunDeferredEntityModel(ShotgunExtendedEntityModel):
                 parent=self,
             )
             self._deferred_models[sg_entity["id"]].data_refreshed.connect(
-                lambda changed : self._on_deferred_data_refreshed(sg_entity, changed)
+                partial(self._on_deferred_data_refreshed, sg_entity)
             )
             self._deferred_models[sg_entity["id"]].data_refresh_fail.connect(
-                lambda message : self._on_deferred_data_refresh_failed(sg_entity, message)
+                partial(self._on_deferred_data_refresh_failed, sg_entity)
             )
             self._deferred_models[sg_entity["id"]].async_refresh()
         else:

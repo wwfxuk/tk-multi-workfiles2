@@ -12,6 +12,8 @@
 Menu that presents a list of users representing sandboxes in the file system (if used in the templates).
 """
 
+from functools import partial
+
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
 from ..user_cache import g_user_cache
@@ -47,7 +49,7 @@ class UserFilterMenu(QtGui.QMenu):
 
         self._current_user_action = QtGui.QAction("Show My Files", self)
         self._current_user_action.setCheckable(True)
-        toggled_slot = lambda toggled: self._on_user_toggled(self._current_user_id, toggled)
+        toggled_slot = partial(self._on_user_toggled, self._current_user_id)
         self._current_user_action.toggled.connect(toggled_slot)
         self.addAction(self._current_user_action)
 
@@ -203,7 +205,7 @@ class UserFilterMenu(QtGui.QMenu):
             # need to create a new action:
             action = QtGui.QAction(user_name, self)
             action.setCheckable(True)
-            toggled_slot = lambda toggled, uid=user_id: self._on_user_toggled(uid, toggled)
+            toggled_slot = partial(self._on_user_toggled, user_id)
             action.toggled.connect(toggled_slot)
 
             # Figure out if the user should be checked:

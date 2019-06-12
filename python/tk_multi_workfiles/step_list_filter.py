@@ -9,6 +9,7 @@
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 from collections import defaultdict
+from functools import partial
 
 import sgtk
 from sgtk.platform.qt import QtCore, QtGui
@@ -226,7 +227,8 @@ class StepListWidget(QtCore.QObject):
             # un-wanted signals.
             if step["id"] in self._current_filter_step_ids:
                 widget.setChecked(True)
-            widget.toggled.connect(lambda value, step_id=step["id"] : self._on_step_filter_toggled(step_id, checked=value))
+            slot = partial(self._on_step_filter_toggled, step["id"])
+            widget.toggled.connect(slot)
             item = QtGui.QListWidgetItem("", self._list_widget)
             item.setData(QtCore.Qt.UserRole, step)
             self._list_widget.setItemWidget(item, widget)

@@ -11,6 +11,8 @@
 """
 Various utility methods used by the app code
 """
+
+from functools import partial
 import threading
 
 import sgtk
@@ -227,7 +229,7 @@ def monitor_qobject_lifetime(obj, name=""):
     global _g_monitored_qobjects
     uid = len(_g_monitored_qobjects)
     _g_monitored_qobjects[uid] = msg
-    obj.destroyed.connect(lambda m=msg, u=uid: _on_qobject_destroyed(m, u))
+    obj.destroyed.connect(partial(_on_qobject_destroyed, msg, uid))
 
 def _on_qobject_destroyed(name, uid):
     """
