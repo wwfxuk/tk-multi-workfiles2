@@ -1,11 +1,11 @@
 # Copyright (c) 2015 Shotgun Software Inc.
-# 
+#
 # CONFIDENTIAL AND PROPRIETARY
-# 
-# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit 
+#
+# This work is provided "AS IS" and subject to the Shotgun Pipeline Toolkit
 # Source Code License included in this distribution package. See LICENSE.
-# By accessing, using, copying or modifying this work you indicate your 
-# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights 
+# By accessing, using, copying or modifying this work you indicate your
+# agreement to the Shotgun Pipeline Toolkit Source Code License. All rights
 # not expressly granted therein are reserved by Shotgun Software Inc.
 
 """
@@ -46,7 +46,7 @@ class FileListForm(QtGui.QWidget):
     def __init__(self, parent, search_label, file_filters, show_work_files=True, show_publishes=False):
         """
         Construction
-        
+
         :param search_label:    The hint label to be displayed on the search control
         :show_work_files:       True if work files should be displayed in this control, otherwise False
         :show_publishes:        True if publishes should be displayed in this control, otherwise False
@@ -154,7 +154,7 @@ class FileListForm(QtGui.QWidget):
     @property
     def selected_file(self):
         """
-        Property to use to query the file and the environment details for that file 
+        Property to use to query the file and the environment details for that file
         that are currently selected in the control.
 
         :returns:   A tuple containing (FileItem, WorkArea) or (None, None)
@@ -242,12 +242,12 @@ class FileListForm(QtGui.QWidget):
                                           show_publishes=self._show_publishes)
             filter_model.rowsInserted.connect(self._on_filter_model_rows_inserted)
             filter_model.setSourceModel(model)
-    
+
             # set automatic sorting on the model:
             filter_model.sort(0, QtCore.Qt.DescendingOrder)
             filter_model.setDynamicSortFilter(True)
-    
-            # connect the views to the filtered model:        
+
+            # connect the views to the filtered model:
             self._ui.file_list_view.setModel(filter_model)
             self._ui.file_details_view.setModel(filter_model)
         else:
@@ -265,14 +265,14 @@ class FileListForm(QtGui.QWidget):
 
     def eventFilter(self, obj, event):
         """
-        Overriden from base class - filters events on QObjects that this instance is installed as 
-        an event filter for.  Used to swallow non-left-mouse-button double-clicks in the file list 
+        Overriden from base class - filters events on QObjects that this instance is installed as
+        an event filter for.  Used to swallow non-left-mouse-button double-clicks in the file list
         view.
 
         :param obj:     The QObject that events are being filtered for
         :param event:   The QEvent to filter
         :returns:       True if the event should be consumed and blocked for further use otherwise
-                        False if this method ignores the event 
+                        False if this method ignores the event
         """
         if obj == self._ui.file_list_view.viewport():
             if (event.type() == QtCore.QEvent.MouseButtonDblClick
@@ -285,16 +285,16 @@ class FileListForm(QtGui.QWidget):
 
     def _update_selection(self, prev_selected_item=None):
         """
-        Update the selection to either the to-be-selected file if set or the current item if known.  The 
-        current item is the item that was last selected but which may no longer be visible in the view due 
-        to filtering.  This allows it to be tracked so that the selection state is correctly restored when 
+        Update the selection to either the to-be-selected file if set or the current item if known.  The
+        current item is the item that was last selected but which may no longer be visible in the view due
+        to filtering.  This allows it to be tracked so that the selection state is correctly restored when
         it becomes visible again.
 
         :param prev_selected_item:  The item that was previously selected (if any).  If, at the end of this
                                     method the selection is different then a file_selected signal will be
                                     emitted
         """
-        # we want to make sure we don't emit any signals whilst we are 
+        # we want to make sure we don't emit any signals whilst we are
         # manipulating the selection:
         signals_blocked = self.blockSignals(True)
         try:
@@ -319,7 +319,7 @@ class FileListForm(QtGui.QWidget):
                     self._ui.file_list_view.scrollTo(idx)
 
                     # select the item:
-                    selection_flags = QtGui.QItemSelectionModel.Clear | QtGui.QItemSelectionModel.SelectCurrent 
+                    selection_flags = QtGui.QItemSelectionModel.Clear | QtGui.QItemSelectionModel.SelectCurrent
                     self._ui.file_list_view.selectionModel().select(idx, selection_flags)
         finally:
             self.blockSignals(signals_blocked)
@@ -345,10 +345,12 @@ class FileListForm(QtGui.QWidget):
         """
         # update UI based on the new filter settings:
         self._ui.all_versions_cb.setChecked(self._file_filters.show_all_versions)
-        self._ui.search_ctrl.search_text = (self._file_filters.filter_reg_exp.pattern() 
+        self._ui.search_ctrl.search_text = (self._file_filters.filter_reg_exp.pattern()
                                                 if self._file_filters.filter_reg_exp else "")
 
         self._ui.user_filter_btn.selected_users = self._file_filters.users
+        print('_ui.user_filter_btn.selected_users:', self._ui.user_filter_btn.selected_users)
+        print('_ui.search_ctrl.search_text:', self._ui.search_ctrl.search_text)
 
     def _on_file_filters_available_users_changed(self, users):
         """
@@ -473,6 +475,7 @@ class FileListForm(QtGui.QWidget):
         try:
             # update the filter model:
             self._file_filters.users = users
+            print('_file_filters.users:', users)
         finally:
             # and update the selection - this will restore the original selection if possible.
             self._update_selection(prev_selected_item)
