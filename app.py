@@ -80,9 +80,9 @@ class MultiWorkFiles(sgtk.platform.Application):
         # because of the way QT inits and connects to different host applications
         # differently, in conjunction with the 'boot' process in different tools,
         # the behaviour can be very different.
-        #
-        # currently, we have done QA on the following engines:
-        SUPPORTED_ENGINES = ["tk-nuke", "tk-maya", "tk-3dsmax", "tk-katana", "tk-katana_foundry"]  # remove tk-katana_foundry when it no longer exists
+        SUPPORTED_ENGINES = self.descriptor._get_manifest().get(
+            "launch_at_startup_supported_engines", []
+        )
 
         if not hasattr(sgtk, "_tk_multi_workfiles2_launch_at_startup"):
 
@@ -91,15 +91,15 @@ class MultiWorkFiles(sgtk.platform.Application):
 
             if self.get_setting('launch_at_startup'):
                 # show the file manager UI
-                if self.engine.name in SUPPORTED_ENGINES:
+                if SUPPORTED_ENGINES and self.engine.name not in SUPPORTED_ENGINES:
+                    self.log_warning("Sorry, the launch at startup option is currently not supported "
+                                     "in this engine! You can currently only use it with the following "
+                                     "engines: %s" % ", ".join(SUPPORTED_ENGINES))
+                else:
                     # use a single-shot timer to show the open dialog to allow everything to
                     # finish being set up first:
                     from sgtk.platform.qt import QtCore
                     QtCore.QTimer.singleShot(200, self.show_file_open_dlg)
-                else:
-                    self.log_warning("Sorry, the launch at startup option is currently not supported "
-                                     "in this engine! You can currently only use it with the following "
-                                     "engines: %s" % ", ".join(SUPPORTED_ENGINES))
 
     def destroy_app(self):
         """
