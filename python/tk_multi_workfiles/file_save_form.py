@@ -306,7 +306,6 @@ class FileSaveForm(FileFormBase):
         self._ui.work_area_preview.setText(
             "<p style='color:rgb%s'>%s</p>" % (self._preview_colour, path_preview)
         )
-
         # update version controls:
         version = result.get("version") or 1
         next_version = result.get("next_version") or 1
@@ -412,6 +411,7 @@ class FileSaveForm(FileFormBase):
             # version is used so we need to find the latest version - this means
             # searching for files...
             # need a file key to find all versions so lets build it:
+
             file_key = FileItem.build_file_key(
                 fields, env.work_template, env.version_compare_ignore_fields
             )
@@ -645,6 +645,23 @@ class FileSaveForm(FileFormBase):
                     # lets populate name with a default value:
                     name = self._current_env.save_as_default_name or "scene"
                 self._ui.name_edit.setText(name)
+
+                # Setup custom name label if any.
+                # See also ./ui/file_save_form.py:retranslateUi()
+                app = sgtk.platform.current_bundle()
+                label_template = (
+                    "<html><head/><body><p><span style=\" font-weight:600;\">"
+                    "{}:</span></p></body></html>"
+                )
+                # Catch even if save_name_label is an empty string.
+                label_text = app.get_setting("save_name_label") or "Name"
+                text = QtGui.QApplication.translate(
+                    "FileSaveForm",
+                    label_template.format(label_text),
+                    None,
+                    QtGui.QApplication.UnicodeUTF8,
+                )
+                self._ui.name_label.setText(text)
 
             self._ui.name_label.setVisible(name_is_used)
             self._ui.name_edit.setVisible(name_is_used)
